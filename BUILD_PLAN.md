@@ -2,13 +2,14 @@
 
 Goal: standalone GitHub-compatible git forge, one Node 22 process, no deps, no git binary, scored by a sealed suite out of 1,000 (feature 600 / agent-MCP 200 / perf 200). Deadline 2026-11-21T06:30:00Z.
 
-## Scaffold (done)
+## Scaffold and local verification
 - /workspace/ghclone — starter copied (main.ts lifecycle kept as-is, app.ts to grow), git initialized, MIT license.
-- Codex configured at ~/.codex/config.toml (provider xingchi, model gpt-6.1-sol); key at /root/.xingchi_key (exists) → export XINGCHI_API_KEY when running codex.
 - Kit at /workspace/github-core-clone-01-kit (sealed suite identical under sdk/ and program/env/). Local grading:
   `node --experimental-strip-types main.ts` then `node sdk/run.ts --url http://127.0.0.1:PORT --token TOK [--perf]`.
 
-## Build order (each step verified against sdk/run.ts)
+## Build order and verification targets
+
+Use the SDK to verify each area; this list describes the intended coverage, not a claim that every check currently passes.
 1. **Store + REST core (repos)** — in-memory store keyed by owner/repo. Routes: GET /api/v3/ (X-OAuth-Scopes), /meta, /user/repos (+ Link rel="next" pagination), POST/GET/PATCH/DELETE /repos/{owner}/{repo}. Every JSON reply with X-GitHub-Request-Id; 401 without bearer; 404 (not 403) for other owners; JSON errors only, 400 on malformed JSON, JSON 404 for unknown routes.
 2. **Git object store + smart HTTP** — own packfile/loose-object storage (zlib via node:zlib, sha1 via node:crypto). upload-pack v2 (capability advertisement, ls-refs, fetch incl. shallow for depth-1 clones) with v0 fallback advertising side-band-64k; receive-pack v0 advertising report-status, side-band-64k, delete-refs; per-ref fast-forward enforcement with `ng <ref> non-fast-forward`, report-status lines ok/ng.
 3. **REST contents/commits** — PUT/DELETE contents/{path} (201 create / 200 update / 409 stale sha; writes real commits so pushes/clones see them).
@@ -26,6 +27,6 @@ Goal: standalone GitHub-compatible git forge, one Node 22 process, no deps, no g
 
 ## Risks
 - git pack protocol (v2 fetch + v0 receive) implemented from scratch is the largest chunk and where most git checks (30) live.
-- Replay determinism: any nondeterministic field (time, iteration order) unrankes the entry.
+- Replay determinism: any nondeterministic field (time, iteration order) can disqualify the entry.
 - Perf bar vs calibration: clone workload (50 concurrent shallow clones) needs an efficient pack protocol implementation.
 - Transcript gate: build must happen in sessions that bundle can collect (run codex/build in recorded harness sessions; ≥5 assistant turns, ≥2 file writes to entrypoint, usage records).
