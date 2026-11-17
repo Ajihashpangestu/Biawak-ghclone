@@ -1,0 +1,16 @@
+{
+  "name": "github-core-clone-01",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Dependency-free Node 22 Git forge with REST, GraphQL, MCP and Git smart HTTP",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "start": "node --experimental-strip-types main.ts",
+    "check": "node --experimental-strip-types --check main.ts && node --experimental-strip-types --check app.ts && node --experimental-strip-types --check scripts/check-sdk.ts",
+    "test:sdk": "node --experimental-strip-types scripts/check-sdk.ts"
+  }
+}
