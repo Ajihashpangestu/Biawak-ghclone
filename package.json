@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Dependency-free Node 22 Git forge with REST, GraphQL, MCP and Git smart HTTP",
+  "description": "Biawak Core: dependency-free Node 22 Git forge with REST, GraphQL, MCP, and Git smart HTTP",
   "license": "MIT",
   "engines": {
     "node": ">=22.18"
